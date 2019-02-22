@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Books</title>
+    <style>
+        a {
+            text-decoration: underline;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+</head>
+<body>
+
+    <nav class="p-2 navbar navbar-light" style="color: #fff !important; background-color: #c22d00;">
+        <h3 class="ml-3 mr-3 d-inline-block"><a style="color: #fff !important; text-decoration: none important!;" href="/">Welcome, {{ request.session.logged_in_user  }}!</a></h3>
+        <a class="pr-3" href="/logout" style="color: #fff !important; text-decoration: underline">Logout</a>
+    </nav>
+
+    <div class="p-5">
+
+        <div class="container float-left w-50 d-inline-block" >
+            <form class="form" action="/books/user_update_book" method="post">
+                <div class="form-group row text-left">
+                        <input type="text" name="title" class="border border-dark col-sm-5" value="{{ book_to_show.title }}">
+                </div>
+                <p>Added by: {{ book_to_show.one_user_who_uploaded_this_book.first_name|title }} {{ book_to_show.one_user_who_uploaded_this_book.last_name|title }}</p>
+                <p>Added on: {{ book_to_show.created_at|date:"N n, o @ P " }}</p>
+                <p>Last updated on: {{ book_to_show.updated_at|date:"N n, o @ P " }}</p>
+                <input name="book_to_update" type="hidden" value="{{ book_to_show.id }}">
+                <div class="form-group row text-left">
+                        <label for="desc" class="col-sm-2 col-form-label mr-3">Description:</label>
+                        <textarea name="desc" id="desc" cols="15" rows="5" class="border border-dark col-sm-5">{{ book_to_show.desc }}</textarea>
+                </div>
+                <div style="margin-left: 17%;">
+                    {% csrf_token %}
+                    <input type="submit" value="Update">
+                </div>
+            </form>
+            <form class="mt-2" style="margin-left: 17%;" action="/books/user_delete_book" method="post">
+                {% csrf_token %}
+                <input name="book_to_delete_id" type="hidden" value={{book_to_show.id}}>
+                <input name="user_delete_book_id" type="hidden" value={{request.session.logged_in_user_id}}>
+                <input class="d-inline-block" type="submit" value="Delete">
+            </form>
+        </div>
+
+        <div class="container float-right w-50">
+            <h2>Users Who Like This Book</h2>
+            <ul>
+                {% for user_who_liked_book in users_who_like_book %}
+                    {% if user_who_liked_book.id == request.session.logged_in_user_id %}
+                    <li>
+                        <form action="/books/user_un_fav_book" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="book_bieng_unfavorited" value="{{ book_to_show.id }}">
+                                <input type="hidden" name="user_unfavorited_book" value="{{ request.session.logged_in_user_id }}">
+                                <li class="d-inline-block mr-2">{{ user_who_liked_book.first_name|title }} {{ user_who_liked_book.last_name|title }} </li>
+                                <input style="text-decoration: underline; margin-left: -15px" class="btn btn-link" type="submit" value="Un-Favorites">
+                        </form>
+                    </li>
+                    {% else %}
+                        <li>{{ user_who_liked_book.first_name|title }} {{ user_who_liked_book.last_name|title }}</li>
+                    {% endif %}
+                {% endfor %}
+                {% if logged_in_user_fav_book == False %}
+                    <form action="/books/user_fav_a_book" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="book_to_favorite_from_home" value="{{ book_to_show.id }}">
+                        <input type="hidden" name="user_at_home_favorite_a_book" value="{{ request.session.logged_in_user_id }}">
+                        <input style="text-decoration: underline; margin-left: -15px" class="btn btn-link" type="submit" value="Add to Favorites">
+                    </form>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+</html>

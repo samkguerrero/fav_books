@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Books</title>
+    <style>
+        a {
+            text-decoration: underline;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+</head>
+<body>
+
+    <nav class="p-2 navbar navbar-light" style="color: #fff !important; background-color: #c22d00;">
+        <h3 class="ml-3 mr-3 d-inline-block"><a style="color: #fff !important; text-decoration: none important!;" href="/">Welcome, {{ request.session.logged_in_user  }}!</a></h3>
+        <a class="pr-3" href="/logout" style="color: #fff !important; text-decoration: underline">Logout</a>
+    </nav>
+
+    <div class="p-5">
+<!--  -->
+        <div class="container float-left w-50" >
+            <h2 style="margin-left: 75px">Add a Favorite Book</h2>        
+            <form class="form" action="/books/add_book" method="post">
+                <div class="form-group row text-left">
+                        <label for="title" class="col-sm-2 col-form-label mr-3">Title</label>
+                        <input type="text" name="title" class="border border-dark col-sm-5">
+                </div>
+                <div class="form-group row text-left">
+                        <label for="desc" class="col-sm-2 col-form-label mr-3">Description</label>
+                        <textarea name="desc" id="desc" cols="15" rows="5" class="border border-dark col-sm-5"></textarea>
+                </div>
+                <div class="form-group row">
+                        <div class="col-sm-2 col-form-label mr-3"></div>
+                        {% csrf_token %}
+                        <input type="hidden" name="id_of_user_creating_book" value="{{ request.session.logged_in_user_id }}">
+                        <input type="submit" value="Add">
+                </div>
+            </form>
+        </div>
+<!--  -->
+        <div class="container float-right w-50">
+            <h2>All Books</h2>
+            {% for book in all_books_liked_by_me %}
+                <div class="mb-4">
+                    <p></p><b><a style="text-decoration: underline important!" href="books/{{ book.id  }}">{{ book.title }}</b></a></p>
+                    <p>(added by {{ book.one_user_who_uploaded_this_book.first_name|title }} {{ book.one_user_who_uploaded_this_book.last_name|title }} )</p>
+                    <p><i>this is one of your favorites</i></p>
+                </div>
+            {% endfor %}
+            {% for book in all_books_not_liked_by_me %}
+                <div class="mb-4">
+                    <p></p><b><a href="books/{{ book.id }}">{{ book.title }}</b></a></p>
+                    <p>(added by {{ book.one_user_who_uploaded_this_book.first_name|title }} {{ book.one_user_who_uploaded_this_book.last_name|title }} )</p>
+                    <form action="/books/user_fav_a_book" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="book_to_favorite_from_home" value="{{ book.id }}">
+                        <input type="hidden" name="user_at_home_favorite_a_book" value="{{ request.session.logged_in_user_id }}">
+                        <input style="text-decoration: underline; margin-left: -15px" class="btn btn-link" type="submit" value="Add to Favorites">
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
