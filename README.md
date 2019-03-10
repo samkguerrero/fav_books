@@ -1,3 +1,5 @@
+Favorite Book Manager
+
 Web application made in python with the Django framework
 
 This project was made with the intention of practicing deploying a django web application to 
