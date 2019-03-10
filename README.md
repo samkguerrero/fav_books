@@ -12,5 +12,9 @@ like favorite books other users have uploaded
 
 See the website deployed at: http://35.163.141.149/
 
+![alt text](https://github.com/samkguerrero/fav_books/blob/master/apps/log_reg/templates/favbook1.png)
 
+![alt text](https://github.com/samkguerrero/fav_books/blob/master/apps/log_reg/templates/favbook2.png)
+
+![alt text](https://github.com/samkguerrero/fav_books/blob/master/apps/log_reg/templates/favbook3.png)
 
